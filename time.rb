@@ -5,7 +5,7 @@ module Our
     #  and the calling functions should take care of exceptions
     #  in a friendly manner.
     
-    #  I did not bother yamlizing hard coded values.
+    #  TODO: yamlize hard coded values.
 
     def initialize(time=nil)
       return if !time
@@ -19,12 +19,13 @@ module Our
       @minute_format = nil 
       breakdown
     end
+
     def AddMinutes(time,minutes)
       initialize(time)
       add_minutes(minutes)
     end
+
     def set_hours(x)
-      
       raise "Type must be set before hours" if !@type
       raise "Regular hours out of range for regular time" if (x > 12 || x < 1) && @type == :regular
       @hours = x
@@ -32,17 +33,22 @@ module Our
       raise "Regular hours out of range for military time" if (x > 23 || x < 0) && @type == :military
       @hours = x
     end
+
     def set_minutes(x)
       @minutes = x
       raise "Regular minutes out of range" if @minutes >= 60 || @minutes < 0
     end
+
     def set_am_pm(x)
       @am_pm = x
       raise "Regular am,pm value out of range" if ![:am,:pm].include?(@am_pm)
     end
+
     def breakdown
+      #regular expressions may be faster need to run tests
       components = @time.split(/ |, |:/)
       #assumptions 3 elements means H,M,AM|PM
+
       if components.size == 3 
 	raise "Expecting colon seperator" unless @time.include?(":")
         @type = :regular
@@ -93,6 +99,7 @@ module Our
         end while @minutes >= 60
       end #if
     end
+
     def add_hours(x)
       @hours += x
       if @type == :regular
@@ -107,6 +114,7 @@ module Our
         end
       end
     end #add_hours
+
     def +(x)
       #Like 3m
       time_to_add = x.to_i
@@ -118,13 +126,8 @@ module Our
       end
       self
     end #def
+
     def to_s
-      #puts @type
-      #puts @hours
-      #puts @minutes
-      #puts @am_pm
-      #puts @time
-      
       #if it's a one digit hour and has minute now make it two
       #but i feel minutes should always be 00
       #this could be more sophisticated, but no time
@@ -134,7 +137,6 @@ module Our
         @time += ":" +( @minutes.to_s.length == 1 ? "0" + @minutes.to_s : @minutes.to_s ) unless @minutes == 0 && @format == "HH AM"
         @time += " " + @am_pm.to_s.upcase
       else
-        #@time = ( @hours.to_s.length == 1 ? "0" + @hours.to_s : @hours.to_s )
         @time = ( @hours.to_s.length == 1 ? "0" + @hours.to_s : @hours.to_s ) if @hour_format == 2
         @time = ( @hours.to_s ) if @hour_format == 1
         @time += ":" +( @minutes.to_s.length == 1 ? "0" + @minutes.to_s : @minutes.to_s ) unless @minutes == 0 && @format == "HH"

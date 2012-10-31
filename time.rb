@@ -4,6 +4,8 @@ module Our
     #  Assuming the overall architecture requires lib functions to raise
     #  and the calling functions should take care of exceptions
     #  in a friendly manner.
+    
+    #  I did not bother yamlizing hard coded values.
 
     def initialize(time=nil)
       return if !time
@@ -11,7 +13,7 @@ module Our
       @hours = nil # int, 1 to 12 if Regular, 0 to 23 if Military.
       @minutes = nil # int, 0 to 60.
       @type = nil # :regular, :military
-      @am_pm = nil # what is that even called in the real world
+      @am_pm = nil # :am, :pm # what is that even called in the real world
       @format = nil
       @hour_format = nil
       @minute_format = nil 
@@ -22,6 +24,8 @@ module Our
       add_minutes(minutes)
     end
     def set_hours(x)
+      
+      raise "Type must be set before hours" if !@type
       raise "Regular hours out of range for regular time" if (x > 12 || x < 1) && @type == :regular
       @hours = x
 
@@ -30,7 +34,7 @@ module Our
     end
     def set_minutes(x)
       @minutes = x
-      raise "Regular minutes out of range" if @minutes >= 60
+      raise "Regular minutes out of range" if @minutes >= 60 || @minutes < 0
     end
     def set_am_pm(x)
       @am_pm = x
@@ -39,11 +43,12 @@ module Our
     def breakdown
       components = @time.split(/ |, |:/)
       #assumptions 3 elements means H,M,AM|PM
-      if components.size == 3
+      if components.size == 3 
+	raise "Expecting colon seperator" unless @time.include?(":")
+        @type = :regular
         set_hours(components[0].to_i)
         set_minutes(components[1].to_i)
         set_am_pm(components[2].downcase.to_sym)
-        @type = :regular
         @format = "HH:MM AM"
         @hour_format = components[0].length
         @minute_format =  components[1].length 
@@ -137,9 +142,4 @@ module Our
       @time
     end
   end #class
-
-  class Utility
-
-  end
 end #module
-

@@ -30,6 +30,39 @@ describe "Our Time" do
   it "should not use any built in date or time functions" do
     1.should == 1
   end
+  it "should fail with bad format" do
+    failed = false
+    begin
+      t5 = Our::Time.new "17 AM"
+    rescue Exception => e
+      failed = true
+    end
+    failed.should == true
+
+    failed = false
+    begin
+      t5 = Our::Time.new "17 00 AM"
+    rescue Exception => e
+      failed = true
+    end
+    failed.should == true
+
+    failed = false  
+    begin
+      t5 = Our::Time.new "47"
+    rescue Exception => e
+      failed = true
+    end
+    failed.should == true
+
+    failed = false  
+    begin
+      t5 = Our::Time.new "17:00 AM"
+    rescue Exception => e
+      failed = true
+    end
+    failed.should == true
+  end
   it "should be production quality code" do
     1.should == 1
     #so it should not be development code

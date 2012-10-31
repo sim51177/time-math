@@ -12,6 +12,9 @@ module Our
       @minutes = nil # int, 0 to 60.
       @type = nil # :regular, :military
       @am_pm = nil # what is that even called in the real world
+      @format = nil
+      @hour_format = nil
+      @minute_format = nil 
       breakdown
     end
     def AddMinutes(time,minutes)
@@ -41,12 +44,18 @@ module Our
         set_minutes(components[1].to_i)
         set_am_pm(components[2].downcase.to_sym)
         @type = :regular
+        @format = "HH:MM AM"
+        @hour_format = components[0].length
+        @minute_format =  components[1].length 
       end
 
       if components.size == 1
         @type = :military
         set_hours(components[0].to_i)
         set_minutes(0)
+	@format = "HH"
+	@hour_format = components[0].length
+        @minute_format = @hour_format # default 
       end
 
       if components.size == 2
@@ -54,6 +63,9 @@ module Our
           @type = :military
           set_hours(components[0].to_i)
           set_minutes(components[1].to_i)
+          @format = "HH:MM"
+          @hour_format = components[0].length
+          @minute_format = components[1].length 
         end
         if [:am,:pm].include?(components[1].downcase.to_sym)
           #12 PM
@@ -61,6 +73,9 @@ module Our
           set_hours(components[0].to_i)
           set_minutes(0)
           set_am_pm(components[1].downcase.to_sym)
+          @format = "HH AM"
+	  @hour_format = components[0].length
+          @minute_format = @hour_format
         end
       end
     end
@@ -104,14 +119,20 @@ module Our
       #puts @minutes
       #puts @am_pm
       #puts @time
-
+      
+      #if it's a one digit hour and has minute now make it two
+      #but i feel minutes should always be 00
+      #this could be more sophisticated, but no time
       if @type == :regular
-        @time = ( @hours.to_s.length == 1 ? "0" + @hours.to_s : @hours.to_s )
-        @time += ":" +( @minutes.to_s.length == 1 ? "0" + @minutes.to_s : @minutes.to_s )
+        @time = ( @hours.to_s.length == 1 ? "0" + @hours.to_s : @hours.to_s ) if @hour_format == 2
+        @time = ( @hours.to_s ) if @hour_format == 1
+        @time += ":" +( @minutes.to_s.length == 1 ? "0" + @minutes.to_s : @minutes.to_s ) unless @minutes == 0 && @format == "HH AM"
         @time += " " + @am_pm.to_s.upcase
       else
-        @time = ( @hours.to_s.length == 1 ? "0" + @hours.to_s : @hours.to_s )
-        @time += ":" +( @minutes.to_s.length == 1 ? "0" + @minutes.to_s : @minutes.to_s )
+        #@time = ( @hours.to_s.length == 1 ? "0" + @hours.to_s : @hours.to_s )
+        @time = ( @hours.to_s.length == 1 ? "0" + @hours.to_s : @hours.to_s ) if @hour_format == 2
+        @time = ( @hours.to_s ) if @hour_format == 1
+        @time += ":" +( @minutes.to_s.length == 1 ? "0" + @minutes.to_s : @minutes.to_s ) unless @minutes == 0 && @format == "HH"
       end
       @time
     end

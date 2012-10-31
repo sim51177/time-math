@@ -5,12 +5,12 @@ describe "Our Time" do
   it "should follow argument scheme given" do
     t = Our::Time.new
     t.AddMinutes "7:17 AM", 10
-    t.to_s.should == "07:27 AM"
+    t.to_s.should == "7:27 AM"
   end
   it "should be able to roll over hours by type regular" do
-    t1 = Our::Time.new "9:55 AM"
+    t1 = Our::Time.new "08:55 AM"
     t1 =  t1 + "10m"
-    t1.to_s.should == "10:05 AM"
+    t1.to_s.should == "09:05 AM"
   end
   it "should be able to roll over hours by type military" do
     t1 = Our::Time.new "23:55"
@@ -20,12 +20,12 @@ describe "Our Time" do
   it "should be able to take single digit as military and rollover" do
     t1 = Our::Time.new "3"
     t1 =  t1 + "60m"
-    t1.to_s.should == "04:00"
+    t1.to_s.should == "4"
   end
   it "should be able to take a single digit regular type and rollover" do
     t3 = Our::Time.new "3 AM"
     t3 =  t3 + "60m"
-    t3.to_s.should == "04:00 AM"
+    t3.to_s.should == "4 AM"
   end
   it "should not use any built in date or time functions" do
     1.should == 1
